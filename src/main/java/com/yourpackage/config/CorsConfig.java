@@ -19,7 +19,7 @@ public class CorsConfig {
         // ✅ Allow local and Vercel frontend
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",                       // for local dev
-                "https://online-job-portal-frontend-delta.vercel.app/"       // 🔁 Replace with your Vercel site URL
+                "https://online-job-portal-frontend-delta.vercel.app"       // 🔁 Replace with your Vercel site URL
         ));
 
         config.setAllowedHeaders(Arrays.asList(
