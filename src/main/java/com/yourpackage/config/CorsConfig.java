@@ -1,4 +1,4 @@
-package com.yourpackage.config; // Replace with your actual package name
+package com.yourpackage.config; 
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +16,10 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        // ✅ Allow local and Vercel frontend
+        //Allow local and Vercel frontend
         config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",                       // for local dev
-                "https://online-job-portal-frontend-delta.vercel.app"       // 🔁 Replace with your Vercel site URL
+                "http://localhost:3000",                      
+                "https://online-job-portal-frontend-delta.vercel.app"
         ));
 
         config.setAllowedHeaders(Arrays.asList(
@@ -29,7 +29,6 @@ public class CorsConfig {
         config.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS"
         ));
-        config.addAllowedOriginPattern("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
