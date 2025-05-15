@@ -12,8 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -25,19 +25,16 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
-    // 🔐 For encoding user passwords securely
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 🔐 Needed for AuthenticationManager to be used in AuthController
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
-    // 🔐 Spring Security core filter chain setup
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -49,14 +46,13 @@ public class SecurityConfig {
                 // Admin-only access
                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 
-                // Recruiter access
-                .requestMatchers("/api/recruiter/**").hasAuthority("RECRUITER")
-                .requestMatchers("/api/jobs/host").hasAuthority("RECRUITER")
+                // Recruiter-only access
+                .requestMatchers("/api/recruiter/**", "/api/jobs/host").hasAuthority("RECRUITER")
 
-                // User access
+                // User-only access
                 .requestMatchers("/api/user/**").hasAuthority("USER")
 
-                // Everything else requires login
+                // Everything else
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -65,29 +61,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🌐 CORS configuration for frontend access
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // React app
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
 
-    // Used internally by Spring Boot
-    @Bean
-    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        // ✅ Allow localhost for dev and Vercel domain for prod
+        config.setAllowedOrigins(List.of(
+            "http://localhost:3000",
+            "https://online-job-portal-frontend-delta.vercel.app/" // 
+        ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }
