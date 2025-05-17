@@ -20,7 +20,7 @@ public class CorsConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",                      
                 "https://online-job-portal-frontend-delta.vercel.app"
-                "https://online-job-portal-production.up.railway.app/"
+                "https://online-job-portal-production.up.railway.app"
         ));
 
         config.setAllowedHeaders(Arrays.asList(
